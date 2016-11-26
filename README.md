@@ -1,5 +1,7 @@
 # Dot Notation
 
+[![Build Status](https://travis-ci.org/dschoenbauer/dot-notation.svg?branch=develop)](https://travis-ci.org/dschoenbauer/dot-notation)
+
 ## Purpose
 Simplifies access to large array structures
 
