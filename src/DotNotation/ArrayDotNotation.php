@@ -1,6 +1,32 @@
 <?php
 
+/*
+ * The MIT License
+ *
+ * Copyright 2016 David Schoenbauer <dschoenbauer@gmail.com>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace DSchoenbauer\DotNotation;
+
+use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
 
 /**
  * An easier way to deal with complex PHP arrays
@@ -19,7 +45,7 @@ class ArrayDotNotation {
     /**
      * An alias for setData 
      * 
-     * @see \DSchoenbauer\DotNotation\ArrayDotNotation::setData()
+     * @see ArrayDotNotation::setData()
      * @since 1.0.0
      * @param array $data Array of data that will be accessed via dot notation.
      */
@@ -96,6 +122,7 @@ class ArrayDotNotation {
      * @param string $dotNotation dot notation representation of keys of where to set a value
      * @param mixed $value any value to be stored with in a key structure of dot notation
      * @return $this
+     * @throws UnexpectedValueException if a value in the dot notation path is not an array
      */
     public function set($dotNotation, $value) {
         $this->recursiveSet($this->_data, explode('.', $dotNotation), $value);
@@ -110,6 +137,7 @@ class ArrayDotNotation {
      * @param array $data data to be traversed
      * @param array $keys the remaining keys of focus for the data array
      * @param mixed $value the value to be placed at the final key
+     * @throws UnexpectedValueException if a value in the dot notation path is not an array
      */
     protected function recursiveSet(array &$data, array $keys, $value) {
         $key = array_shift($keys);
@@ -118,9 +146,29 @@ class ArrayDotNotation {
         } else {
             if (!array_key_exists($key, $data)) {
                 $data[$key] = [];
+            }elseif (!is_array($data[$key])) {
+                throw new UnexpectedValueException("Array dot notation path key '$key' is not an array");
             }
             $this->recursiveSet($data[$key], $keys, $value);
         }
+    }
+
+    /**
+     * Merges two arrays together over writing existing values with new values, while adding new array structure to the data 
+     * 
+     * @param string $dotNotation dot notation representation of keys of where to set a value
+     * @param array $value array to be merged with an existing array
+     * @return $this
+     * @throws UnexpectedValueException if a value in the dot notation path is not an array
+     * @throws UnexpectedValueException if the value in the dot notation target is not an array
+     */
+    public function merge($dotNotation, array $value) {
+        $target = $this->get($dotNotation, []);
+        if (!is_array($target)) {
+            throw new UnexpectedValueException('Array dot notation target key value is not an array. Merge is not possible');
+        }
+        $this->set($dotNotation, array_merge_recursive($target, $value));
+        return $this;
     }
 
 }

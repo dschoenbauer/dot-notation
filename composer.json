@@ -1,7 +1,7 @@
 {
     "name": "dschoenbauer/dot-notation",
     "type": "library",
-    "license": "Private",
+    "license": "MIT",
     "authors": [
         {
             "name": "David Schoenbauer",

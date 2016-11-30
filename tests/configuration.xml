@@ -43,11 +43,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           convertErrorsToExceptions="true"
           convertNoticesToExceptions="true"
           convertWarningsToExceptions="true"
-          stopOnFailure="true">
+          stopOnFailure="false">
    <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../src</directory>
             <exclude>
+                <directory suffix="Interface.php">../src</directory>
                 <directory>./vendor</directory>
                 <directory>./tests</directory>
             </exclude>

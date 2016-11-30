@@ -2,6 +2,7 @@
 
 namespace DSchoenbauer\DotNotation;
 
+use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -59,6 +60,15 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('newValue', $this->_object->set('LevelA.LevelB.LevelC.levelD', 'newValue')->get('LevelA.LevelB.LevelC.levelD'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
+    
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Array dot notation path key 'c' is not an array
+     */
+    public function testSetNotExistArrayButString() {
+        $data = ['a'=>['b'=>['c'=>'cValue']]];
+        $newData = ['e'=>'dValue'];
+        $this->_object->setData($data)->set('a.b.c.d',$newData)->getData();    }
 
     public function testSetInitialLevelExistingValue() {
         $this->assertEquals('levelB', $this->_object->get('levelB'));
@@ -76,6 +86,40 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(['levelB' => 'someValueB'], $this->_object->get('levelA'));
         $this->assertEquals('newValue', $this->_object->set('levelA', 'newValue')->get('levelA'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
+    }
+    
+    public function testMergeSimpleArray(){
+        $data = ['a'=>['b'=>['c'=>'cValue']]];
+        $merge = ['d'=>'dValue'];
+        $this->assertEquals('dValue',$this->_object->setData($data)->merge('a.b',$merge)->get('a.b.d'));
+        $this->assertEquals('cValue',$this->_object->get('a.b.c'));
+    }
+    
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Array dot notation target key value is not an array. Merge is not possible
+     */
+    public function testMergeNotAnArray(){
+        $data = ['a'=>['b'=>['c'=>'cValue']]];
+        $merge = ['d'=>'dValue'];
+        $this->_object->setData($data)->merge('a.b.c',$merge);
+    }
+    
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Array dot notation path key 'c' is not an array
+     */     
+    public function testMergeNotPresentKeyString(){
+        $data = ['a'=>['b'=>['c'=>'cValue']]];
+        $merge = ['e'=>'dValue'];
+        $this->_object->setData($data)->merge('a.b.c.d',$merge)->getData();
+    }
+
+    public function testMergeNotPresentKey(){
+        $data = ['a'=>['b'=>['c'=>[]]]];
+        $merge = ['e'=>'dValue'];
+        $result = ['a'=>['b'=>['c'=>['d'=>['e'=>'dValue']]]]];
+        $this->assertEquals($result, $this->_object->setData($data)->merge('a.b.c.d',$merge)->getData());
     }
 
 }

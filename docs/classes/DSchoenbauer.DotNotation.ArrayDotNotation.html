@@ -137,6 +137,12 @@
         </a>
     </li>
 
+                                                                                                        <li class="method public">
+        <a href="#method_merge" title="merge :: Merges two arrays together over writing existing values with new values, while adding new array structure to the data">
+            <span class="description">Merges two arrays together over writing existing values with new values, while adding new array structure to the data</span><pre>merge</pre>
+        </a>
+    </li>
+
                                                                                                                                                                                                                         <li class="method public">
         <a href="#method_set" title="set :: sets a value into a complicated array data structure">
             <span class="description">sets a value into a complicated array data structure</span><pre>set</pre>
@@ -153,7 +159,7 @@
         </li>
         <li class="nav-header protected">» Protected
             <ul>
-                                                                                                                                                                                        <li class="method protected">
+                                                                                                                                                                                                                            <li class="method protected">
                             <a href="#method_recursiveGet" title="recursiveGet :: Recursively works though an array level by level until the final key is found. Once key is found the keys value is returned.">
                                 <span class="description">Recursively works though an array level by level until the final key is found. Once key is found the keys value is returned.</span><pre>recursiveGet</pre>
                             </a>
@@ -167,7 +173,7 @@
         </li>
         <li class="nav-header private">» Private
             <ul>
-                                                                                                                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                                                                                                                                                            </ul>
         </li>
         <li class="nav-header">
             <i class="icon-custom icon-constant"></i> Constants
@@ -349,6 +355,48 @@
                             </div>
 
                         </div>
+                                            <a id="method_merge"></a>
+                        <div class="element clickable method public  method_merge" data-toggle="collapse" data-target=".method_merge .collapse">
+                            <h2>Merges two arrays together over writing existing values with new values, while adding new array structure to the data</h2>
+                            <pre>merge(string $dotNotation, array $value) : $this</pre>
+                            <div class="labels">
+                                                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    throws
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>if a value in the dot notation path is not an array</p>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>if the value in the dot notation target is not an array</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                            </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$dotNotation</h4>
+                                                <code>string</code><p><p>dot notation representation of keys of where to set a value</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$value</h4>
+                                                <code>array</code><p><p>array to be merged with an existing array</p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>$this</code><p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
                                             <a id="method_recursiveGet"></a>
                         <div class="element clickable method protected  method_recursiveGet" data-toggle="collapse" data-target=".method_recursiveGet .collapse">
                             <h2>Recursively works though an array level by level until the final key is found. Once key is found the keys value is returned.</h2>
@@ -417,6 +465,15 @@
                                             </tr>
                                                                                     <tr>
                                                 <th>
+                                                    throws
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>if a value in the dot notation path is not an array</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
                                                     
                                                 </th>
                                                 <td>
@@ -466,6 +523,15 @@ one array.</p></div>
                                                 <td>
                                                                                                                                                                         1.0.0
                                                                                                                                                                         
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    throws
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>if a value in the dot notation path is not an array</p>
                                                                                                     </td>
                                             </tr>
                                                                             </table>
@@ -571,7 +637,7 @@ one array.</p></div>
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by
             <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and<br/>
-            generated on Tue, 29 Nov 2016 15:53:43 +0000.<br/>
+            generated on Wed, 30 Nov 2016 11:56:30 +0000.<br/>
     </footer>
     </body>
 </html>
