@@ -147,5 +147,11 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     public function testRemovePathNotFoundShort() {
         $this->_object->remove('level0');
     }
+    /**
+     * @expectedException \DSchoenbauer\DotNotation\Exception\PathNotArrayException
+     */
+    public function testRemovePathNotArray() {
+        $this->_object->remove('levelA.levelB.levelD');
+    }
 
 }
