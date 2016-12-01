@@ -31,6 +31,11 @@
 
 						<ul>
 				<li>
+					<a href="namespace-DSchoenbauer.DotNotation.Enum.html">
+						Enum					</a>
+
+						</li>
+				<li>
 					<a href="namespace-DSchoenbauer.DotNotation.Exception.html">
 						Exception					</a>
 
@@ -109,7 +114,7 @@
 				David Schoenbauer<br>
 				<b>Version:</b>
 				1.0.1<br>
-			<b>Located at</b> <a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#31-174" title="Go to source code">DotNotation/ArrayDotNotation.php</a>
+			<b>Located at</b> <a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#34-211" title="Go to source code">DotNotation/ArrayDotNotation.php</a>
 		<br>
 	</div>
 
@@ -129,7 +134,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#___construct">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#45-54" title="Go to source code">__construct</a>( <span>array <var>$data</var> = []</span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#48-57" title="Go to source code">__construct</a>( <span>array <var>$data</var> = []</span> )</code>
 
 		<div class="description short">
 			<p>An alias for setData</p>
@@ -172,7 +177,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getData">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#56-66" title="Go to source code">getData</a>( )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#59-69" title="Go to source code">getData</a>( )</code>
 
 		<div class="description short">
 			<p>returns the array</p>
@@ -212,7 +217,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setData">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#68-78" title="Go to source code">setData</a>( <span>array <var>$data</var></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#71-81" title="Go to source code">setData</a>( <span>array <var>$data</var></span> )</code>
 
 		<div class="description short">
 			<p>sets the array that the dot notation will be used on.</p>
@@ -255,7 +260,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_get">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#80-92" title="Go to source code">get</a>( <span>string <var>$dotNotation</var></span>, <span>mixed <var>$defaultValue</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#83-95" title="Go to source code">get</a>( <span>string <var>$dotNotation</var></span>, <span>mixed <var>$defaultValue</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Retrieves a value from an array structure as defined by a dot notation string</p>
@@ -302,7 +307,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_recursiveGet">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#94-110" title="Go to source code">recursiveGet</a>( <span>array <var>$data</var></span>, <span>array <var>$keys</var></span>, <span>mixed <var>$defaultValue</var></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#97-113" title="Go to source code">recursiveGet</a>( <span>array <var>$data</var></span>, <span>array <var>$keys</var></span>, <span>mixed <var>$defaultValue</var></span> )</code>
 
 		<div class="description short">
 			<p>Recursively works though an array level by level until the final key is found. Once key is found the keys value is returned.</p>
@@ -349,7 +354,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_set">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#112-130" title="Go to source code">set</a>( <span>string <var>$dotNotation</var></span>, <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#115-133" title="Go to source code">set</a>( <span>string <var>$dotNotation</var></span>, <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			<p>sets a value into a complicated array data structure</p>
@@ -380,7 +385,7 @@ one array.</p>
 
 				<h4>Throws</h4>
 				<div class="list">
-					<code><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">DSchoenbauer\DotNotation\Exception\UnexpectedValueException</a></code><br>if a value in the dot notation path is not an array
+					<code><a href="class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html">DSchoenbauer\DotNotation\Exception\PathNotArrayException</a></code><br>if a value in the dot notation path is not an array
 				</div>
 
 				<h4>Since</h4>
@@ -404,7 +409,7 @@ one array.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_recursiveSet">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#132-154" title="Go to source code">recursiveSet</a>( <span>array <var>&amp; $data</var></span>, <span>array <var>$keys</var></span>, <span>mixed <var>$value</var></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#135-157" title="Go to source code">recursiveSet</a>( <span>array <var>&amp; $data</var></span>, <span>array <var>$keys</var></span>, <span>mixed <var>$value</var></span> )</code>
 
 		<div class="description short">
 			<p>Transverses the keys array until it reaches the appropriate key in the data array and sets that key to the value.
@@ -429,7 +434,7 @@ If the keys don't exist they are created.</p>
 
 				<h4>Throws</h4>
 				<div class="list">
-					<code><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">DSchoenbauer\DotNotation\Exception\UnexpectedValueException</a></code><br>if a value in the dot notation path is not an array
+					<code><a href="class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html">DSchoenbauer\DotNotation\Exception\PathNotArrayException</a></code><br>if a value in the dot notation path is not an array
 				</div>
 
 				<h4>Since</h4>
@@ -453,7 +458,7 @@ If the keys don't exist they are created.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_merge">#</a>
-		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#156-172" title="Go to source code">merge</a>( <span>string <var>$dotNotation</var></span>, <span>array <var>$value</var></span> )</code>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#159-176" title="Go to source code">merge</a>( <span>string <var>$dotNotation</var></span>, <span>array <var>$value</var></span> )</code>
 
 		<div class="description short">
 			<p>Merges two arrays together over writing existing values with new values, while adding new array structure to the data</p>
@@ -479,9 +484,101 @@ If the keys don't exist they are created.</p>
 				<h4>Throws</h4>
 				<div class="list">
 					<code><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">DSchoenbauer\DotNotation\Exception\UnexpectedValueException</a></code><br>if a value in the dot notation path is not an array<br>
-					<code><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">DSchoenbauer\DotNotation\Exception\UnexpectedValueException</a></code><br>if the value in the dot notation target is not an array
+					<code><a href="class-DSchoenbauer.DotNotation.Exception.TargetNotArrayException.html">DSchoenbauer\DotNotation\Exception\TargetNotArrayException</a></code><br>if the value in the dot notation target is not an array
 				</div>
 
+				<h4>Since</h4>
+				<div class="list">
+						1.1.0<br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="remove" id="_remove">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_remove">#</a>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#178-188" title="Go to source code">remove</a>( <span>string <var>$dotNotation</var></span> )</code>
+
+		<div class="description short">
+			<p>Removes data from the array</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Removes data from the array</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$dotNotation</var></dt>
+					<dd>dot notation representation of keys of where to remove a value</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<br>$this
+				</div>
+
+
+				<h4>Since</h4>
+				<div class="list">
+						1.1.0<br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="recursiveRemove" id="_recursiveRemove">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_recursiveRemove">#</a>
+		<code><a href="source-class-DSchoenbauer.DotNotation.ArrayDotNotation.html#190-209" title="Go to source code">recursiveRemove</a>( <span>array <var>&amp; $data</var></span>, <span>array <var>$keys</var></span> )</code>
+
+		<div class="description short">
+			<p>Transverses the keys array until it reaches the appropriate key in the data array and then deletes the value from the key.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Transverses the keys array until it reaches the appropriate key in the data array and then deletes the value from the key.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$data</var></dt>
+					<dd>data to be traversed</dd>
+					<dt><var>$keys</var></dt>
+					<dd>the remaining keys of focus for the data array</dd>
+				</dl></div>
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">DSchoenbauer\DotNotation\Exception\UnexpectedValueException</a></code><br>if a value in the dot notation path is not an array
+				</div>
+
+				<h4>Since</h4>
+				<div class="list">
+						1.1.0<br>
+				</div>
 
 
 		</div>

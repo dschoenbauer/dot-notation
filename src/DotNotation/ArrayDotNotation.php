@@ -179,7 +179,7 @@ class ArrayDotNotation {
      * Removes data from the array
      * 
      * @since 1.1.0
-     * @param type $dotNotation
+     * @param string $dotNotation dot notation representation of keys of where to remove a value
      * @return $this
      */
     public function remove($dotNotation) {
