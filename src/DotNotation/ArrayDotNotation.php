@@ -26,6 +26,9 @@
 
 namespace DSchoenbauer\DotNotation;
 
+use DSchoenbauer\DotNotation\Exception\PathNotArrayException;
+use DSchoenbauer\DotNotation\Exception\PathNotFoundException;
+use DSchoenbauer\DotNotation\Exception\TargetNotArrayException;
 use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
 
 /**
@@ -122,7 +125,7 @@ class ArrayDotNotation {
      * @param string $dotNotation dot notation representation of keys of where to set a value
      * @param mixed $value any value to be stored with in a key structure of dot notation
      * @return $this
-     * @throws UnexpectedValueException if a value in the dot notation path is not an array
+     * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
     public function set($dotNotation, $value) {
         $this->recursiveSet($this->_data, explode('.', $dotNotation), $value);
@@ -137,7 +140,7 @@ class ArrayDotNotation {
      * @param array $data data to be traversed
      * @param array $keys the remaining keys of focus for the data array
      * @param mixed $value the value to be placed at the final key
-     * @throws UnexpectedValueException if a value in the dot notation path is not an array
+     * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
     protected function recursiveSet(array &$data, array $keys, $value) {
         $key = array_shift($keys);
@@ -146,8 +149,8 @@ class ArrayDotNotation {
         } else {
             if (!array_key_exists($key, $data)) {
                 $data[$key] = [];
-            }elseif (!is_array($data[$key])) {
-                throw new UnexpectedValueException("Array dot notation path key '$key' is not an array");
+            } elseif (!is_array($data[$key])) {
+                throw new Exception\PathNotArrayException($key);
             }
             $this->recursiveSet($data[$key], $keys, $value);
         }
@@ -156,19 +159,53 @@ class ArrayDotNotation {
     /**
      * Merges two arrays together over writing existing values with new values, while adding new array structure to the data 
      * 
+     * @since 1.1.0
      * @param string $dotNotation dot notation representation of keys of where to set a value
      * @param array $value array to be merged with an existing array
      * @return $this
      * @throws UnexpectedValueException if a value in the dot notation path is not an array
-     * @throws UnexpectedValueException if the value in the dot notation target is not an array
+     * @throws TargetNotArrayException if the value in the dot notation target is not an array
      */
     public function merge($dotNotation, array $value) {
         $target = $this->get($dotNotation, []);
         if (!is_array($target)) {
-            throw new UnexpectedValueException('Array dot notation target key value is not an array. Merge is not possible');
+            throw new Exception\TargetNotArrayException($dotNotation);
         }
         $this->set($dotNotation, array_merge_recursive($target, $value));
         return $this;
+    }
+
+    /**
+     * Removes data from the array
+     * 
+     * @since 1.1.0
+     * @param type $dotNotation
+     * @return $this
+     */
+    public function remove($dotNotation) {
+        $this->recursiveRemove($this->_data, explode('.', $dotNotation), $dotNotation);
+        return $this;
+    }
+
+    /**
+     * Transverses the keys array until it reaches the appropriate key in the data array and then deletes the value from the key.
+     * 
+     * @since 1.1.0
+     * @param array $data data to be traversed
+     * @param array $keys the remaining keys of focus for the data array
+     * @throws UnexpectedValueException if a value in the dot notation path is not an array
+     */
+    protected function recursiveRemove(array &$data, array $keys) {
+        $key = array_shift($keys);
+        if (!array_key_exists($key, $data)) {
+            throw new PathNotFoundException($key);
+        } elseif ($key && count($keys) == 0) { //Last Key
+            unset($data[$key]);
+        } elseif (!is_array($data[$key])) {
+            throw new PathNotArrayException($key);
+        } else {
+            $this->recursiveRemove($data[$key], $keys);
+        }
     }
 
 }
