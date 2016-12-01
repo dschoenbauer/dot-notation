@@ -1,6 +1,7 @@
 # Dot Notation
 
 [![Build Status](https://travis-ci.org/dschoenbauer/dot-notation.svg?branch=develop)](https://travis-ci.org/dschoenbauer/dot-notation)
+[![Coverage Status](https://coveralls.io/repos/github/dschoenbauer/dot-notation/badge.svg?branch=develop)](https://coveralls.io/github/dschoenbauer/dot-notation?branch=develop)
 
 ## Purpose
 Simplifies access to large array structures
