@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>Class DSchoenbauer\DotNotation\Exception\InvalidArgumentException</title>
+	<title>Class DSchoenbauer\DotNotation\Exception\PathNotArrayException</title>
 
 	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
 
@@ -57,8 +57,8 @@
 
 			<h3>Exceptions</h3>
 			<ul>
-				<li class="active"><a href="class-DSchoenbauer.DotNotation.Exception.InvalidArgumentException.html">InvalidArgumentException</a></li>
-				<li><a href="class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html">PathNotArrayException</a></li>
+				<li><a href="class-DSchoenbauer.DotNotation.Exception.InvalidArgumentException.html">InvalidArgumentException</a></li>
+				<li class="active"><a href="class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html">PathNotArrayException</a></li>
 				<li><a href="class-DSchoenbauer.DotNotation.Exception.PathNotFoundException.html">PathNotFoundException</a></li>
 				<li><a href="class-DSchoenbauer.DotNotation.Exception.TargetNotArrayException.html">TargetNotArrayException</a></li>
 				<li><a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html">UnexpectedValueException</a></li>
@@ -97,11 +97,11 @@
 	</div>
 
 <div id="content" class="class">
-	<h1>Class InvalidArgumentException</h1>
+	<h1>Class PathNotArrayException</h1>
 
 
 	<div class="description">
-	<p>Description of InvalidArgumentException</p>
+	<p>Description of PathNotArrayException</p>
 	</div>
 
 	<dl class="tree">
@@ -112,19 +112,28 @@ Exception
 		</dd>
 		<dd style="padding-left:30px">
 			<img src="resources/inherit.png" alt="Extended by">
-LogicException
+RuntimeException
 			
 			
 		</dd>
 		<dd style="padding-left:60px">
 			<img src="resources/inherit.png" alt="Extended by">
-InvalidArgumentException
+UnexpectedValueException
 			
 			
 		</dd>
 		<dd style="padding-left:90px">
 			<img src="resources/inherit.png" alt="Extended by">
-<b><span>DSchoenbauer\DotNotation\Exception\InvalidArgumentException</span></b>			
+			<a href="class-DSchoenbauer.DotNotation.Exception.UnexpectedValueException.html"><span>DSchoenbauer\DotNotation\Exception\UnexpectedValueException</span></a>
+			
+			 implements 
+				<a href="class-DSchoenbauer.DotNotation.Exception.ExceptionInterface.html"><span>DSchoenbauer\DotNotation\Exception\ExceptionInterface</span></a>
+			
+			
+		</dd>
+		<dd style="padding-left:120px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>DSchoenbauer\DotNotation\Exception\PathNotArrayException</span></b>			
 			 implements 
 				<a href="class-DSchoenbauer.DotNotation.Exception.ExceptionInterface.html"><span>DSchoenbauer\DotNotation\Exception\ExceptionInterface</span></a>
 			
@@ -147,18 +156,50 @@ InvalidArgumentException
 
 				<b>Author:</b>
 				David Schoenbauer <a href="&#109;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#x64;&#115;&#x63;h&#111;&#x65;&#110;&#98;&#x61;&#117;&#x65;r&#64;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;">&#x64;&#115;&#x63;h&#111;&#x65;&#110;&#98;&#x61;&#117;&#x65;r&#64;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;</a><br>
-			<b>Located at</b> <a href="source-class-DSchoenbauer.DotNotation.Exception.InvalidArgumentException.html#31-38" title="Go to source code">DotNotation/Exception/InvalidArgumentException.php</a>
+			<b>Located at</b> <a href="source-class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html#31-43" title="Go to source code">DotNotation/Exception/PathNotArrayException.php</a>
 		<br>
 	</div>
 
 
 
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-DSchoenbauer.DotNotation.Exception.PathNotArrayException.html#37-42" title="Go to source code">__construct</a>( <span> <var>$key</var> = <span class="php-quote">&quot;&quot;</span></span>, <span> <var>$message</var> = <span class="php-quote">&quot;&quot;</span></span>, <span> <var>$code</var> = <span class="php-num">0</span></span>, <span> <var>$previous</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
 
 	<table class="summary inherited">
 	<caption>Methods inherited from Exception</caption>
 	<tr>
 		<td><code>
-__construct(), 
 __toString(), 
 __wakeup(), 
 getCode(), 
