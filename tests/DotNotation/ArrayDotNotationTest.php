@@ -167,4 +167,17 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->_object->remove('levelA.levelB.levelD');
     }
 
+    public function testChangeNotationType(){
+        $this->assertEquals('someValueB', $this->_object->setNotationType('-')->get('levelA-levelB'));
+    }
+
+    public function testChangeNotationTypeNoFindDefaultValue() {
+        $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelB-levelC', 'noValue'));
+    }
+
+    public function testChangeNotationTypeSameLevelDefaultValue() {
+        $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelC', 'noValue'));
+    }
+
+
 }

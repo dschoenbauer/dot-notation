@@ -29,6 +29,8 @@ $mongoConnection = [
     ]
 ];
 $config = new ArrayDotNotation($mongoConnection);
+        --- or ---
+$config = ArrayDotNotation::with($mongoConnection);
 ```
 
 ### GET
@@ -48,8 +50,7 @@ $mongoDefault = $config->get('mongo.default');
 
 ### SET
 ````
-$config = $config->set('mongo.numbers', [2, 3, 5, 7, 11]);
-$configDump = $config->getData();
+$configDump = $config->set('mongo.numbers', [2, 3, 5, 7, 11])->getData();
 /*
     $configDump = [
         'mongo' => [
@@ -63,8 +64,7 @@ $configDump = $config->getData();
 
 ### MERGE
 ````
-$config = $config->merge('mongo.default', ['user' => 'otherUser','active' => true]);
-$configDump = $config->getData();
+$configDump = $config->merge('mongo.default', ['user' => 'otherUser','active' => true])->getData();
 /*
     $configDump = [
         'mongo' => [
@@ -77,8 +77,7 @@ $configDump = $config->getData();
 
 ### REMOVE
 ````
-$config = $config->remove('mongo.default.user');
-$configDump = $config->getData();
+$configDump = $config->remove('mongo.default.user')->getData();
 /*
     $configDump = [
         'mongo' => [
@@ -87,4 +86,23 @@ $configDump = $config->getData();
         'title' => 'Dot Notation'
     ];
 */
+````
+
+### NOTATION TYPE
+````
+// Tired of dots? Change it.
+$user = $config->setNotationType(',')->get('mongo,default,user');
+/*
+    $user = 'username';
+*/ 
+````
+
+### WITH
+````
+//Functional fluent fun
+$user = ArrayDotNotation::with($mongoConnection)->get('mongo,default,user');
+/*
+    $user = 'username';
+*/ 
+
 ````
