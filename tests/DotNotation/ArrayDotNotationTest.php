@@ -37,6 +37,19 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $object = new ArrayDotNotation($data);
         $this->assertEquals($data, $object->getData());
     }
+    
+    public function testWith(){
+        $this->assertInstanceOf(ArrayDotNotation::class, ArrayDotNotation::with());
+    }
+
+    public function testWithData(){
+        $data = ['test'=>'value'];
+        $this->assertEquals($data, ArrayDotNotation::with($data)->getData());
+    }
+    
+    public function testWithNoData(){
+        $this->assertEquals([], ArrayDotNotation::with()->getData());
+    }
 
     public function testGet() {
         $this->assertEquals('someValueB', $this->_object->get('levelA.levelB'));
@@ -152,6 +165,28 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
      */
     public function testRemovePathNotArray() {
         $this->_object->remove('levelA.levelB.levelD');
+    }
+
+    public function testChangeNotationType(){
+        $this->assertEquals('someValueB', $this->_object->setNotationType('-')->get('levelA-levelB'));
+    }
+
+    public function testChangeNotationTypeNoFindDefaultValue() {
+        $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelB-levelC', 'noValue'));
+    }
+
+    public function testChangeNotationTypeSameLevelDefaultValue() {
+        $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelC', 'noValue'));
+    }
+
+    public function testHas(){
+        $this->assertTrue($this->_object->has('levelA'));
+        $this->assertTrue($this->_object->has('levelA.levelB'));
+        $this->assertTrue($this->_object->has('levelB'));
+        $this->assertTrue($this->_object->has('level1'));
+        $this->assertTrue($this->_object->has('level1.level2'));
+        $this->assertFalse($this->_object->has('level1.level2.level3'));
+        $this->assertFalse($this->_object->has('level2'));
     }
 
 }

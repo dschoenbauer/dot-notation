@@ -35,7 +35,7 @@ use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
  * An easier way to deal with complex PHP arrays
  * 
  * @author David Schoenbauer
- * @version 1.0.1
+ * @version 1.2.0
  */
 class ArrayDotNotation {
 
@@ -44,13 +44,26 @@ class ArrayDotNotation {
      * @var array
      */
     private $_data = [];
+    private $_notationType = ".";
+
+    /**
+     * Sets the data to parse in a chain
+     * @since 1.2.0
+     * @param array $data optional  Array of data that will be accessed via dot notation.
+     * @author John Smart
+     * @author David Schoenbauer
+     * @return \static
+     */
+    public static function with(array $data = []) {
+        return new static($data);
+    }
 
     /**
      * An alias for setData 
      * 
      * @see ArrayDotNotation::setData()
      * @since 1.0.0
-     * @param array $data Array of data that will be accessed via dot notation.
+     * @param array $data optional Array of data that will be accessed via dot notation.
      */
     public function __construct(array $data = []) {
         $this->setData($data);
@@ -91,7 +104,7 @@ class ArrayDotNotation {
      * @return mixed value found via dot notation in the array of data
      */
     public function get($dotNotation, $defaultValue = null) {
-        return $this->recursiveGet($this->getData(), explode('.', $dotNotation), $defaultValue);
+        return $this->recursiveGet($this->getData(), $this->getKeys($dotNotation), $defaultValue);
     }
 
     /**
@@ -128,7 +141,7 @@ class ArrayDotNotation {
      * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
     public function set($dotNotation, $value) {
-        $this->recursiveSet($this->_data, explode('.', $dotNotation), $value);
+        $this->recursiveSet($this->_data, $this->getKeys($dotNotation), $value);
         return $this;
     }
 
@@ -183,7 +196,7 @@ class ArrayDotNotation {
      * @return $this
      */
     public function remove($dotNotation) {
-        $this->recursiveRemove($this->_data, explode('.', $dotNotation), $dotNotation);
+        $this->recursiveRemove($this->_data, $this->getKeys($dotNotation));
         return $this;
     }
 
@@ -208,6 +221,56 @@ class ArrayDotNotation {
         } else {
             $this->recursiveRemove($data[$key], $keys);
         }
+    }
+
+    /**
+     * consistently parses notation keys
+     * @since 1.2.0
+     * @param type $notation key path to a value in an array
+     * @return array array of keys as delimited by the notation type
+     */
+    protected function getKeys($notation) {
+        return explode($this->getNotationType(), $notation);
+    }
+
+    /**
+     * Returns the current notation type that delimits the notation path. 
+     * Default: "."
+     * @since 1.2.0
+     * @return string current notation character delimiting the notation path
+     */
+    public function getNotationType() {
+        return $this->_notationType;
+    }
+
+    /**
+     * Sets the current notation type used to delimit the notation path.
+     * @since 1.2.0
+     * @param string $notationType
+     * @return $this
+     */
+    public function setNotationType($notationType = ".") {
+        $this->_notationType = $notationType;
+        return $this;
+    }
+
+    /**
+     * Checks to see if a dot notation path is present in the data set.
+     * @since 1.2.0
+     * @param string $dotNotation dot notation representation of keys of where to remove a value
+     * @return boolean returns true if the dot notation path exists in the data
+     */
+    public function has($dotNotation) {
+        $keys = $this->getKeys($dotNotation);
+        $dataRef = &$this->_data;
+        foreach ($keys as $key) {
+            if (!is_array($dataRef) || !array_key_exists($key, $dataRef)) {
+                return false;
+            } else {
+                $dataRef = &$dataRef[$key];
+            }
+        }
+        return true;
     }
 
 }
