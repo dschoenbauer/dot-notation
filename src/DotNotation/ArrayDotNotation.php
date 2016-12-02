@@ -35,7 +35,7 @@ use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
  * An easier way to deal with complex PHP arrays
  * 
  * @author David Schoenbauer
- * @version 1.0.1
+ * @version 1.1.1
  */
 class ArrayDotNotation {
 

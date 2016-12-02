@@ -1,6 +1,8 @@
 {
     "name": "dschoenbauer/dot-notation",
     "type": "library",
+    "description": "Given a complicated data structure, allows easy and safe access to data via dot notation. This library is a compilation of other Dot Notation libraries, taking the best feature from each and incorpating them here.",
+    "keywords": ["dot", "notation", "access", "array", "data"],
     "license": "MIT",
     "authors": [
         {
@@ -20,7 +22,7 @@
         "phpunit/phpunit": "5.6.2",
         "satooshi/php-coveralls": "dev-master"
     },
-    "scripts" :{
-        "test" : "phpunit tests"
+    "scripts": {
+        "test": "phpunit tests"
     }
 }
