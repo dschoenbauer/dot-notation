@@ -179,5 +179,14 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelC', 'noValue'));
     }
 
+    public function testHas(){
+        $this->assertTrue($this->_object->has('levelA'));
+        $this->assertTrue($this->_object->has('levelA.levelB'));
+        $this->assertTrue($this->_object->has('levelB'));
+        $this->assertTrue($this->_object->has('level1'));
+        $this->assertTrue($this->_object->has('level1.level2'));
+        $this->assertFalse($this->_object->has('level1.level2.level3'));
+        $this->assertFalse($this->_object->has('level2'));
+    }
 
 }

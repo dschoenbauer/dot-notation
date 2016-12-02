@@ -106,3 +106,12 @@ $user = ArrayDotNotation::with($mongoConnection)->get('mongo,default,user');
 */ 
 
 ````
+
+### HAS
+````
+// Validates that the dot notation path is present in the data.
+$isPresent = $config->has('mongo,default,user');
+/*
+    $isPresent = true;
+*/ 
+````

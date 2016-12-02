@@ -223,7 +223,7 @@ class ArrayDotNotation {
     }
 
     /**
-     * consistantly parses notation keys
+     * consistently parses notation keys
      * @param type $notation key path to a value in an array
      * @return array array of keys as delimited by the notation type
      */
@@ -248,6 +248,24 @@ class ArrayDotNotation {
     public function setNotationType($notationType = ".") {
         $this->_notationType = $notationType;
         return $this;
+    }
+
+    /**
+     * Checks to see if a dot notation path is present in the data set.
+     * @param string $dotNotation dot notation representation of keys of where to remove a value
+     * @return boolean returns true if the dot notation path exists in the data
+     */
+    public function has($dotNotation) {
+        $keys = $this->getKeys($dotNotation);
+        $dataRef = &$this->_data;
+        foreach ($keys as $key) {
+            if (!is_array($dataRef) || !array_key_exists($key, $dataRef)) {
+                return false;
+            } else {
+                $dataRef = &$dataRef[$key];
+            }
+        }
+        return true;
     }
 
 }
