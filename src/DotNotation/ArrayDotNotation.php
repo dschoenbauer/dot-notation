@@ -188,12 +188,14 @@ class ArrayDotNotation {
     }
 
     /**
-     * Transverses the keys array until it reaches the appropriate key in the data array and then deletes the value from the key.
+     * Transverses the keys array until it reaches the appropriate key in the 
+     * data array and then deletes the value from the key.
      * 
      * @since 1.1.0
      * @param array $data data to be traversed
      * @param array $keys the remaining keys of focus for the data array
-     * @throws UnexpectedValueException if a value in the dot notation path is not an array
+     * @throws UnexpectedValueException if a value in the dot notation path is 
+     * not an array
      */
     protected function recursiveRemove(array &$data, array $keys) {
         $key = array_shift($keys);

@@ -29,6 +29,7 @@ namespace DSchoenbauer\DotNotation\Exception;
 /**
  * A base interface for trapping and validating that the exception is of this library
  * 
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
 interface ExceptionInterface {

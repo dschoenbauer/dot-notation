@@ -29,11 +29,24 @@ namespace DSchoenbauer\DotNotation\Enum;
 /**
  * A collection of messages used inside of exceptions
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
 class ExceptionMessage {
 
+    /**
+     * Message to be used in PathNotFoundException
+     */
     const PATH_NOT_FOUND = "Path key: '%s' is not found";
+
+    /**
+     * Message to be used in PathNotArrayException
+     */
     const PATH_NOT_ARRAY = "Array dot notation path key '%s' is not an array";
+
+    /**
+     * Message to be used in TargetNotArrayException
+     */
     const TARGET_NOT_ARRAY = "Array dot notation target key '%s' value is not an array.";
+
 }

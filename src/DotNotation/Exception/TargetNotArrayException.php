@@ -29,11 +29,13 @@ namespace DSchoenbauer\DotNotation\Exception;
 use DSchoenbauer\DotNotation\Enum\ExceptionMessage;
 
 /**
- * Description of TargetNotAnArrayException
+ * Exception thrown when the final node in the dot notation path needs to be an 
+ * array but it is not.
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
-class TargetNotArrayException extends UnexpectedValueException implements ExceptionInterface {
+class TargetNotArrayException extends UnexpectedValueException {
 
     public function __construct($key = "", $message = "", $code = 0, $previous = null) {
         if ($message == "" && $key !== "") {

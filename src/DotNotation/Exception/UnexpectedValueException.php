@@ -34,6 +34,7 @@ use UnexpectedValueException as SystemUnexpectedValueException;
  * value to be of a certain type or value not including arithmetic or buffer
  * related errors.
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
 class UnexpectedValueException extends SystemUnexpectedValueException implements ExceptionInterface {

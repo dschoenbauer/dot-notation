@@ -21,44 +21,70 @@ Simplifies access to large array structures
 ## Example
 
 ```
-<?php
-
 use DSchoenbauer\DotNotation\ArrayDotNotation;
 
-$mongoConnection = [
-    'mongo' => [
-        'default' => [
-            'user' => 'username',
-            'password' => 's3cr3t'
-        ]
+$mongoConnection = [ 
+    'mongo' => [ 
+        'default' => [  'user' => 'username', 'password' => 's3cr3t' ]
     ]
 ];
 $config = new ArrayDotNotation($mongoConnection);
+```
 
+### GET
+```
 // Get plain value
-
 $user = $config->get('mongo.default.user');
 /*
     $user = 'username';
 */ 
 
 // Get array value
-
 $mongoDefault = $config->get('mongo.default'); 
 /* 
     $mongoDefault = ['user' => 'username', 'password' => 's3cr3t'];
 */
+```
 
-// Set values
-
+### SET
+````
 $config = $config->set('mongo.numbers', [2, 3, 5, 7, 11]);
 $configDump = $config->getData();
 /*
     $configDump = [
         'mongo' => [
+            'default' => [  'user' => 'username', 'password' => 's3cr3t' ],
             'numbers' => [2, 3, 5, 7, 11]
         ],
         'title' => 'Dot Notation'
     ];
 */
-```
+````
+
+### MERGE
+````
+$config = $config->merge('mongo.default', ['user' => 'otherUser','active' => true]);
+$configDump = $config->getData();
+/*
+    $configDump = [
+        'mongo' => [
+           'default' => [  'user' => 'otherUser', 'password' => 's3cr3t','active' => true ]
+        ],
+        'title' => 'Dot Notation'
+    ];
+*/
+````
+
+### REMOVE
+````
+$config = $config->remove('mongo.default.user');
+$configDump = $config->getData();
+/*
+    $configDump = [
+        'mongo' => [
+           'default' => [  'password' => 's3cr3t' ]
+        ],
+        'title' => 'Dot Notation'
+    ];
+*/
+````
