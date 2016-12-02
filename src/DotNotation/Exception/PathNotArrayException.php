@@ -29,11 +29,12 @@ namespace DSchoenbauer\DotNotation\Exception;
 use DSchoenbauer\DotNotation\Enum\ExceptionMessage;
 
 /**
- * Description of PathNotArrayException
+ * Exception thrown when a node along the dot notation is found not to be an array
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
-class PathNotArrayException  extends UnexpectedValueException implements ExceptionInterface{
+class PathNotArrayException  extends UnexpectedValueException{
         public function __construct($key = "", $message = "", $code = 0, $previous = null) {
         if ($message == "" && $key !== "") {
             $message = sprintf(ExceptionMessage::PATH_NOT_ARRAY, $key);

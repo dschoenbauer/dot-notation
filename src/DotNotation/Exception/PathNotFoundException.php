@@ -29,11 +29,13 @@ namespace DSchoenbauer\DotNotation\Exception;
 use DSchoenbauer\DotNotation\Enum\ExceptionMessage;
 
 /**
- * Description of PathNotFoundException
+ * Exception thrown when the dot notation path is not found in the 
+ * target data structure
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
-class PathNotFoundException extends UnexpectedValueException implements ExceptionInterface {
+class PathNotFoundException extends UnexpectedValueException {
 
     public function __construct($key = "", $message = "", $code = 0, $previous = null) {
         if ($message == "" && $key !== "") {

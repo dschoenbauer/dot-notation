@@ -29,8 +29,9 @@ namespace DSchoenbauer\DotNotation\Exception;
 use InvalidArgumentException as SystemInvalidArgumentException;
 
 /**
- * Description of InvalidArgumentException
+ * Exception thrown if an argument is not of the expected type.
  *
+ * @since 1.1.0
  * @author David Schoenbauer <dschoenbauer@gmail.com>
  */
 class InvalidArgumentException extends SystemInvalidArgumentException implements ExceptionInterface {
