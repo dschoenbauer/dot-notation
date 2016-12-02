@@ -44,13 +44,24 @@ class ArrayDotNotation {
      * @var array
      */
     private $_data = [];
+    
+    /**
+     * Sets the data to parse in a chain
+     * @param array $data optional  Array of data that will be accessed via dot notation.
+     * @author John Smart
+     * @author David Schoenbauer
+     * @return \static
+     */
+    public static function with(array $data = []){
+        return new static($data);
+    }
 
     /**
      * An alias for setData 
      * 
      * @see ArrayDotNotation::setData()
      * @since 1.0.0
-     * @param array $data Array of data that will be accessed via dot notation.
+     * @param array $data optional Array of data that will be accessed via dot notation.
      */
     public function __construct(array $data = []) {
         $this->setData($data);

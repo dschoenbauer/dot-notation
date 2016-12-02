@@ -37,6 +37,19 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $object = new ArrayDotNotation($data);
         $this->assertEquals($data, $object->getData());
     }
+    
+    public function testWith(){
+        $this->assertInstanceOf(ArrayDotNotation::class, ArrayDotNotation::with());
+    }
+
+    public function testWithData(){
+        $data = ['test'=>'value'];
+        $this->assertEquals($data, ArrayDotNotation::with($data)->getData());
+    }
+    
+    public function testWithNoData(){
+        $this->assertEquals([], ArrayDotNotation::with()->getData());
+    }
 
     public function testGet() {
         $this->assertEquals('someValueB', $this->_object->get('levelA.levelB'));
