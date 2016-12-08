@@ -35,9 +35,26 @@ use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
  * An easier way to deal with complex PHP arrays
  * 
  * @author David Schoenbauer
- * @version 1.1.1
+ * @version 1.3.0
  */
 class ArrayDotNotation {
+
+    const WILD_CARD_CHARACTER = "*";
+
+    /**
+     * Returns only the values that match the dot notation path. Used only with wild cards.
+     */
+    const MODE_RETURN_FOUND = 'found';
+
+    /**
+     * Returns a default value if the dot notation path is not found.
+     */
+    const MODE_RETURN_DEFAULT = 'default';
+
+    /**
+     * Throws a DSchoenbauer\DotNotation\Exception\PathNotFoundException if the path is not found in the data.
+     */
+    const MODE_THROW_EXCEPTION = 'exception';
 
     /**
      * Property that houses the data that the dot notation should access
@@ -45,6 +62,8 @@ class ArrayDotNotation {
      */
     private $_data = [];
     private $_notationType = ".";
+    private $_defaultValue;
+    private $_getMode;
 
     /**
      * Sets the data to parse in a chain
@@ -65,7 +84,7 @@ class ArrayDotNotation {
      * @param array $data optional Array of data that will be accessed via dot notation.
      */
     public function __construct(array $data = []) {
-        $this->setData($data);
+        $this->setData($data)->setGetMode(self::MODE_RETURN_DEFAULT);
     }
 
     /**
@@ -103,7 +122,8 @@ class ArrayDotNotation {
      * @return mixed value found via dot notation in the array of data
      */
     public function get($dotNotation, $defaultValue = null) {
-        return $this->recursiveGet($this->getData(), $this->getKeys($dotNotation), $defaultValue);
+        $this->setDefaultValue($defaultValue);
+        return $this->recursiveGet($this->getData(), $this->getKeys($dotNotation));
     }
 
     /**
@@ -114,14 +134,32 @@ class ArrayDotNotation {
      * @param mixed $defaultValue value to return when a key is not found
      * @return mixed value that the keys find in the data array
      */
-    protected function recursiveGet($data, $keys, $defaultValue) {
+    protected function recursiveGet($data, $keys) {
         $key = array_shift($keys);
-        if (is_array($data) && $key && count($keys) == 0) { //Last Key
-            return array_key_exists($key, $data) ? $data[$key] : $defaultValue;
+        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
+            return $this->wildCardGet($keys, $data);
+        } elseif (is_array($data) && $key && count($keys) == 0) { //Last Key
+            return array_key_exists($key, $data) ? $data[$key] : $this->getDefaultValue($key);
         } elseif (is_array($data) && array_key_exists($key, $data)) {
-            return $this->recursiveGet($data[$key], $keys, $defaultValue);
+            return $this->recursiveGet($data[$key], $keys);
         }
-        return $defaultValue;
+        return $this->getDefaultValue($key);
+    }
+
+    protected function wildCardGet(array $keys, $data) {
+        $output = [];
+        foreach ($data as $key => $value) {
+            try {
+                $tempKeys = $keys;
+                array_unshift($tempKeys, $key);
+                $output[] = $this->recursiveGet($data, $tempKeys);
+            } catch (\Exception $exc) {
+                if ($this->getGetMode() !== self::MODE_RETURN_FOUND) {
+                    throw $exc;
+                }
+            }
+        }
+        return $output;
     }
 
     /**
@@ -224,6 +262,7 @@ class ArrayDotNotation {
 
     /**
      * consistently parses notation keys
+     * @since 1.2.0
      * @param type $notation key path to a value in an array
      * @return array array of keys as delimited by the notation type
      */
@@ -234,6 +273,7 @@ class ArrayDotNotation {
     /**
      * Returns the current notation type that delimits the notation path. 
      * Default: "."
+     * @since 1.2.0
      * @return string current notation character delimiting the notation path
      */
     public function getNotationType() {
@@ -242,6 +282,7 @@ class ArrayDotNotation {
 
     /**
      * Sets the current notation type used to delimit the notation path.
+     * @since 1.2.0
      * @param string $notationType
      * @return $this
      */
@@ -252,6 +293,8 @@ class ArrayDotNotation {
 
     /**
      * Checks to see if a dot notation path is present in the data set.
+     * 
+     * @since 1.2.0
      * @param string $dotNotation dot notation representation of keys of where to remove a value
      * @return boolean returns true if the dot notation path exists in the data
      */
@@ -266,6 +309,57 @@ class ArrayDotNotation {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns the current default value.
+     * @note should be a protected method
+     * @since 1.3.0
+     * @param type $key
+     * @return mixed value to be used instead of a real value is not found
+     * @throws PathNotFoundException when the key 
+     */
+    public function getDefaultValue($key = null) {
+        if ($key !== null && in_array($this->getGetMode(), [self::MODE_THROW_EXCEPTION, self::MODE_RETURN_FOUND])) {
+            throw new PathNotFoundException($key);
+        }
+        return $this->_defaultValue;
+    }
+
+    /**
+     * The default value that get will return. Do not set the value with this method. Set the default value in the get method.
+     * @note should be a protected method
+     * @since 1.3.0
+     * @param mixed $defaultValue value to be used instead of a real value is not found
+     * @return $this
+     */
+    public function setDefaultValue($defaultValue) {
+        $this->_defaultValue = $defaultValue;
+        return $this;
+    }
+
+    /**
+     * Returns the behavior defined for how get will return a value.
+     * @since 1.3.0
+     * @return enum values are constants of this class MODE_RETURN_DEFAULT, MODE_RETURN_FOUND, MODE_THROW_EXCEPTION
+     */
+    public function getGetMode() {
+        return $this->_getMode;
+    }
+
+    /**
+     * Defines the behavior on how get returns a value.
+     * @since 1.3.0
+     * @param enum $getMode values are constants of this class MODE_RETURN_DEFAULT, MODE_RETURN_FOUND, MODE_THROW_EXCEPTION
+     * @return $this
+     */
+    public function setGetMode($getMode) {
+        $modes = [self::MODE_RETURN_DEFAULT, self::MODE_RETURN_FOUND, self::MODE_THROW_EXCEPTION];
+        if (!in_array($getMode, $modes)) {
+            throw new Exception\InvalidArgumentException('Not a supported mode. Please use on of:' . implode(', ', $modes));
+        }
+        $this->_getMode = $getMode;
+        return $this;
     }
 
 }
