@@ -148,7 +148,7 @@ class ArrayDotNotation {
 
     protected function wildCardGet(array $keys, $data) {
         $output = [];
-        foreach ($data as $key => $value) {
+        foreach (array_keys($data) as $key) {
             try {
                 $tempKeys = $keys;
                 array_unshift($tempKeys, $key);
@@ -157,6 +157,7 @@ class ArrayDotNotation {
                 if ($this->getGetMode() !== self::MODE_RETURN_FOUND) {
                     throw $exc;
                 }
+                //else do nothing
             }
         }
         return $output;
@@ -300,15 +301,31 @@ class ArrayDotNotation {
      */
     public function has($dotNotation) {
         $keys = $this->getKeys($dotNotation);
-        $dataRef = &$this->_data;
-        foreach ($keys as $key) {
-            if (!is_array($dataRef) || !array_key_exists($key, $dataRef)) {
-                return false;
-            } else {
-                $dataRef = &$dataRef[$key];
+        $data = $this->_data;
+        return $this->recursiveHas($keys, $data);
+    }
+
+    protected function recursiveHas(array $keys, $data) {
+        $key = array_shift($keys);
+        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
+            return $this->wildCardHas($keys, $data);
+        } elseif (!is_array($data) || !array_key_exists($key, $data)) {
+            return false;
+        } elseif ($key && count($keys) == 0) { //Last Key
+            return true;
+        }
+        return $this->recursiveHas($keys, $data[$key]);
+    }
+
+    public function wildCardHas($keys, $data) {
+        foreach (array_keys($data) as $key) {
+            $tempKeys = $keys;
+            array_unshift($tempKeys, $key);
+            if ($this->recursiveHas($tempKeys, $data)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**

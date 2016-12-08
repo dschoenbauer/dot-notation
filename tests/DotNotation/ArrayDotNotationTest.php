@@ -19,7 +19,12 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $data = [
             'levelA' => [
-                'levelB' => 'someValueB'
+                'levelB' => 'someValueB',
+                'levelB2' => [
+                    'levelC2' => [
+                        'levelD2' => 'someValueD2'
+                    ]
+                ]
             ],
             'levelB' => 'levelB',
             'level1' => [
@@ -58,7 +63,7 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetWildCardEndWithWild() {
-        $this->assertEquals(['someValueB'], $this->_object->get('levelA.*'));
+        $this->assertEquals(['someValue2'], $this->_object->get('level1.*'));
     }
 
     public function testGetWildCardDefault() {
@@ -84,8 +89,8 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         ];
         $this->assertEquals(['a', 'b', 'c', 'd', 'e', 'f'], $this->_object->setData($data)->get('test.test.*.value'));
     }
-    
-    public function testGetWildCardNotFoundException(){
+
+    public function testGetWildCardNotFoundException() {
         $this->expectException(PathNotFoundException::class);
         $this->_object->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->get('*.levelC', 'noValue');
     }
@@ -137,7 +142,7 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSetDataTypeConversion() {
-        $this->assertEquals(['levelB' => 'someValueB'], $this->_object->get('levelA'));
+        $this->assertEquals(['levelB' => 'someValueB', 'levelB2' => ['levelC2' => ['levelD2' => 'someValueD2']]], $this->_object->get('levelA'));
         $this->assertEquals('newValue', $this->_object->set('levelA', 'newValue')->get('levelA'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
@@ -178,7 +183,13 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
 
     public function testRemove() {
         $data = [
-            'levelA' => [],
+            'levelA' => [
+                'levelB2' => [
+                    'levelC2' => [
+                        'levelD2' => 'someValueD2'
+                    ]
+                ]
+            ],
             'levelB' => 'levelB',
             'level1' => [
                 'level2' => 'someValue2'
@@ -222,6 +233,18 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->_object->has('level1.level2'));
         $this->assertFalse($this->_object->has('level1.level2.level3'));
         $this->assertFalse($this->_object->has('level2'));
+    }
+
+    public function testHasWildCard() {
+        $this->assertTrue($this->_object->has('*'));
+        $this->assertTrue($this->_object->has('*.levelB'));
+        $this->assertTrue($this->_object->has('*.*.*.*'));
+        $this->assertTrue($this->_object->has('levelB'));
+        $this->assertTrue($this->_object->has('level1'));
+        $this->assertTrue($this->_object->has('level1.*'));
+        $this->assertFalse($this->_object->has('*.*.*.*.*'));
+        $this->assertFalse($this->_object->has('level1.level2.*'));
+        $this->assertFalse($this->_object->has('level1.level2.*'));
     }
 
     public function testGetMode() {
