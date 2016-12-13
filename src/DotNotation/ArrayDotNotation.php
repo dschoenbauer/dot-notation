@@ -265,7 +265,9 @@ class ArrayDotNotation {
      */
     protected function recursiveRemove(array &$data, array $keys) {
         $key = array_shift($keys);
-        if (!array_key_exists($key, $data)) {
+        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
+            $this->wildCardRemove($keys, $data);
+        } elseif (!array_key_exists($key, $data)) {
             throw new PathNotFoundException($key);
         } elseif ($key && count($keys) == 0) { //Last Key
             unset($data[$key]);
@@ -273,6 +275,26 @@ class ArrayDotNotation {
             throw new PathNotArrayException($key);
         } else {
             $this->recursiveRemove($data[$key], $keys);
+        }
+    }
+
+    /**
+     * Parses each key when a wild card  key is met
+     * @since 1.3.0
+     * @param array $keys the remaining keys of focus for the data array
+     * @param array $data data to be traversed
+     */
+    protected function wildCardRemove(array $keys, &$data) {
+        $keysNotFound = [];
+        foreach (array_keys($data) as $key) {
+            try {
+                $this->recursiveRemove($data, $this->unshiftKeys($keys, $key));
+            } catch (PathNotFoundException $exc) {
+                $keysNotFound[] = implode($this->getNotationType(), $this->unshiftKeys($keys, $key));
+            }
+        }
+        if(count($keysNotFound) === count($data)){
+            throw new PathNotFoundException(implode(', ', $keysNotFound));
         }
     }
 

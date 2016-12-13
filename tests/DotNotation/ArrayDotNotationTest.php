@@ -236,6 +236,59 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($data, $this->_object->remove('levelA.levelB')->getData());
     }
 
+    public function testRemoveWildCard() {
+        $data = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "email" => null, "name" => "one"],
+                            ["id" => 2, "email" => null, "name" => "two"],
+                            ["id" => 3, "email" => null, "name" => "three"],
+                            ["id" => 4, "email" => null, "name" => "four"],
+                            ["id" => 5, "email" => null, "name" => "five"],
+                    ]]]
+        ];
+        $results = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "name" => "one"],
+                            ["id" => 2, "name" => "two"],
+                            ["id" => 3, "name" => "three"],
+                            ["id" => 4, "name" => "four"],
+                            ["id" => 5, "name" => "five"],
+                    ]]]
+        ];
+        $this->assertEquals($results, $this->_object->setData($data)->remove('level1.level2.level3.*.email')->getData());
+    }
+
+    public function testRemoveWildCardNoException() {
+        $data = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "email" => null, "name" => "one"],
+                            ["id" => 2, "email" => null, "name" => "two"],
+                            ["id" => 3, "email" => null, "name" => "three"],
+                            ["id" => 4, "email" => null, "name" => "four"],
+                            ["id" => 5, "name" => "five"],
+                    ]]]
+        ];
+        $results = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "name" => "one"],
+                            ["id" => 2, "name" => "two"],
+                            ["id" => 3, "name" => "three"],
+                            ["id" => 4, "name" => "four"],
+                            ["id" => 5, "name" => "five"],
+                    ]]]
+        ];
+        $this->assertEquals($results, $this->_object->setData($data)->remove('level1.level2.level3.*.email')->getData());
+    }
+
+    public function testRemoveWildCardException() {
+        $data = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "name" => "one"],
+                            ["id" => 2, "name" => "two"],
+                            ["id" => 3, "name" => "three"],
+                            ["id" => 4, "name" => "four"],
+                            ["id" => 5, "name" => "five"],
+                    ]]]
+        ];
+        $this->expectException(PathNotFoundException::class);
+        $this->_object->setData($data)->remove('level1.level2.level3.*.email')->getData();
+    }
+
     public function testRemovePathNotFound() {
         $this->expectException(PathNotFoundException::class);
         $this->_object->remove('levelA.levelC');
