@@ -147,6 +147,44 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
 
+    public function testSetWildCardForShallowPath() {
+        $data = [
+                ["id" => 1, "name" => "one"],
+                ["id" => 2, "name" => "two"],
+                ["id" => 3, "name" => "three"],
+                ["id" => 4, "name" => "four"],
+                ["id" => 5, "name" => "five"],
+        ];
+        $results = [
+                ["id" => 1, "email" => null, "name" => "one"],
+                ["id" => 2, "email" => null, "name" => "two"],
+                ["id" => 3, "email" => null, "name" => "three"],
+                ["id" => 4, "email" => null, "name" => "four"],
+                ["id" => 5, "email" => null, "name" => "five"],
+        ];
+        $this->assertEquals($results, $this->_object->setData($data)->set('*.email', null)->getData());
+    }
+
+    public function testSetWildCardForADeepPath() {
+        $data = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "name" => "one"],
+                            ["id" => 2, "name" => "two"],
+                            ["id" => 3, "name" => "three"],
+                            ["id" => 4, "name" => "four"],
+                            ["id" => 5, "name" => "five"],
+                    ]]]
+        ];
+        $results = ["level1" => ["level2" => ["level3" => [
+                            ["id" => 1, "email" => null, "name" => "one"],
+                            ["id" => 2, "email" => null, "name" => "two"],
+                            ["id" => 3, "email" => null, "name" => "three"],
+                            ["id" => 4, "email" => null, "name" => "four"],
+                            ["id" => 5, "email" => null, "name" => "five"],
+                    ]]]
+        ];
+        $this->assertEquals($results, $this->_object->setData($data)->set('level1.level2.level3.*.email', null)->getData());
+    }
+
     public function testMergeSimpleArray() {
         $data = ['a' => ['b' => ['c' => 'cValue']]];
         $merge = ['d' => 'dValue'];

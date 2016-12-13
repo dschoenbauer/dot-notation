@@ -150,9 +150,7 @@ class ArrayDotNotation {
         $output = [];
         foreach (array_keys($data) as $key) {
             try {
-                $tempKeys = $keys;
-                array_unshift($tempKeys, $key);
-                $output[] = $this->recursiveGet($data, $tempKeys);
+                $output[] = $this->recursiveGet($data, $this->unshiftKeys($keys, $key));
             } catch (\Exception $exc) {
                 if ($this->getGetMode() !== self::MODE_RETURN_FOUND) {
                     throw $exc;
@@ -198,12 +196,29 @@ class ArrayDotNotation {
         if ($key && count($keys) == 0) { //Last Key
             $data[$key] = $value;
         } else {
-            if (!array_key_exists($key, $data)) {
+            if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
+                $this->wildCardSet($keys, $data, $value);
+            } elseif (!array_key_exists($key, $data)) {
                 $data[$key] = [];
             } elseif (!is_array($data[$key])) {
                 throw new Exception\PathNotArrayException($key);
             }
-            $this->recursiveSet($data[$key], $keys, $value);
+            if ($key !== static::WILD_CARD_CHARACTER) {
+                $this->recursiveSet($data[$key], $keys, $value);
+            }
+        }
+    }
+
+    /**
+     * Parses each key when a wild card  key is met
+     * @since 1.3.0
+     * @param array $keys the remaining keys of focus for the data array
+     * @param array $data data to be traversed
+     * @param mixed $value the value to be placed at the final key
+     */
+    protected function wildCardSet(array $keys, &$data, $value) {
+        foreach (array_keys($data) as $key) {
+            $this->recursiveSet($data, $this->unshiftKeys($keys, $key), $value);
         }
     }
 
@@ -305,6 +320,14 @@ class ArrayDotNotation {
         return $this->recursiveHas($keys, $data);
     }
 
+    /**
+     * Recursively checks for the dot notation path in the data array
+     * 
+     * @since 1.3.0
+     * @param array $keys array of keys that still need to be review for the dot notation path
+     * @param array $data data to be checked for the dot notation path
+     * @return boolean
+     */
     protected function recursiveHas(array $keys, $data) {
         $key = array_shift($keys);
         if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
@@ -317,11 +340,16 @@ class ArrayDotNotation {
         return $this->recursiveHas($keys, $data[$key]);
     }
 
-    public function wildCardHas($keys, $data) {
+    /**
+     * A process to enumerate through the has function with a wild card
+     * @since 1.3.0
+     * @param array $keys 
+     * @param array $data
+     * @return boolean
+     */
+    protected function wildCardHas(array $keys, array $data) {
         foreach (array_keys($data) as $key) {
-            $tempKeys = $keys;
-            array_unshift($tempKeys, $key);
-            if ($this->recursiveHas($tempKeys, $data)) {
+            if ($this->recursiveHas($this->unshiftKeys($keys, $key), $data)) {
                 return true;
             }
         }
@@ -377,6 +405,18 @@ class ArrayDotNotation {
         }
         $this->_getMode = $getMode;
         return $this;
+    }
+
+    /**
+     * Calls the unshift function like a true function and not by reference
+     * @param array $keys array that will have a key appended to
+     * @param string $key key to be added to the beginning of the array
+     * @return array array of merged keys with key prepended to the beginning of the array
+     */
+    private function unshiftKeys($keys, $key) {
+        $tempKeys = $keys;
+        array_unshift($tempKeys, $key);
+        return $tempKeys;
     }
 
 }
