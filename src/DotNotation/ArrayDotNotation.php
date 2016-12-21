@@ -27,9 +27,13 @@
 namespace DSchoenbauer\DotNotation;
 
 use DSchoenbauer\DotNotation\Exception\PathNotArrayException;
-use DSchoenbauer\DotNotation\Exception\PathNotFoundException;
 use DSchoenbauer\DotNotation\Exception\TargetNotArrayException;
 use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
+use DSchoenbauer\DotNotation\Framework\Command\GetCommand;
+use DSchoenbauer\DotNotation\Framework\Command\HasCommand;
+use DSchoenbauer\DotNotation\Framework\Command\MergeCommand;
+use DSchoenbauer\DotNotation\Framework\Command\RemoveCommand;
+use DSchoenbauer\DotNotation\Framework\Command\SetCommand;
 
 /**
  * An easier way to deal with complex PHP arrays
@@ -39,31 +43,18 @@ use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
  */
 class ArrayDotNotation {
 
-    const WILD_CARD_CHARACTER = "*";
-
-    /**
-     * Returns only the values that match the dot notation path. Used only with wild cards.
-     */
-    const MODE_RETURN_FOUND = 'found';
-
-    /**
-     * Returns a default value if the dot notation path is not found.
-     */
-    const MODE_RETURN_DEFAULT = 'default';
-
-    /**
-     * Throws a DSchoenbauer\DotNotation\Exception\PathNotFoundException if the path is not found in the data.
-     */
-    const MODE_THROW_EXCEPTION = 'exception';
-
     /**
      * Property that houses the data that the dot notation should access
      * @var array
      */
     private $_data = [];
     private $_notationType = ".";
-    private $_defaultValue;
-    private $_getMode;
+    private $_wildCardCharacter = "*";
+    private $_getCommand;
+    private $_setCommand;
+    private $_removeCommand;
+    private $_hasCommand;
+    private $_mergeCommand;
 
     /**
      * Sets the data to parse in a chain
@@ -83,8 +74,13 @@ class ArrayDotNotation {
      * @since 1.0.0
      * @param array $data optional Array of data that will be accessed via dot notation.
      */
-    public function __construct(array $data = []) {
-        $this->setData($data)->setGetMode(self::MODE_RETURN_DEFAULT);
+    public function __construct(array $data = [], GetCommand $getCommand = null, SetCommand $setCommand = null, HasCommand $hasCommand = null, MergeCommand $mergeCommand = null, RemoveCommand $removeCommand = null) {
+        $this->setData($data);
+        $this->setGetCommand($getCommand ? $getCommand->setArrayDotNotation($this) : new GetCommand($this));
+        $this->setSetCommand($setCommand ? $setCommand->setArrayDotNotation($this) : new SetCommand($this));
+        $this->setHasCommand($hasCommand ? $hasCommand->setArrayDotNotation($this) : new HasCommand($this));
+        $this->setMergeCommand($mergeCommand ? $mergeCommand->setArrayDotNotation($this) : new MergeCommand($this));
+        $this->setRemoveCommand($removeCommand ? $removeCommand->setArrayDotNotation($this) : new RemoveCommand($this));
     }
 
     /**
@@ -122,43 +118,7 @@ class ArrayDotNotation {
      * @return mixed value found via dot notation in the array of data
      */
     public function get($dotNotation, $defaultValue = null) {
-        $this->setDefaultValue($defaultValue);
-        return $this->recursiveGet($this->getData(), $this->getKeys($dotNotation));
-    }
-
-    /**
-     * Recursively works though an array level by level until the final key is found. Once key is found the keys value is returned.
-     * @since 1.0.0
-     * @param array $data array that has value to be retrieved
-     * @param array $keys array of keys for each level of the array
-     * @param mixed $defaultValue value to return when a key is not found
-     * @return mixed value that the keys find in the data array
-     */
-    protected function recursiveGet($data, $keys) {
-        $key = array_shift($keys);
-        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
-            return $this->wildCardGet($keys, $data);
-        } elseif (is_array($data) && $key && count($keys) == 0) { //Last Key
-            return array_key_exists($key, $data) ? $data[$key] : $this->getDefaultValue($key);
-        } elseif (is_array($data) && array_key_exists($key, $data)) {
-            return $this->recursiveGet($data[$key], $keys);
-        }
-        return $this->getDefaultValue($key);
-    }
-
-    protected function wildCardGet(array $keys, $data) {
-        $output = [];
-        foreach (array_keys($data) as $key) {
-            try {
-                $output[] = $this->recursiveGet($data, $this->unshiftKeys($keys, $key));
-            } catch (\Exception $exc) {
-                if ($this->getGetMode() !== self::MODE_RETURN_FOUND) {
-                    throw $exc;
-                }
-                //else do nothing
-            }
-        }
-        return $output;
+        return $this->getGetCommand()->get($dotNotation, $defaultValue);
     }
 
     /**
@@ -177,49 +137,8 @@ class ArrayDotNotation {
      * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
     public function set($dotNotation, $value) {
-        $this->recursiveSet($this->_data, $this->getKeys($dotNotation), $value);
+        $this->getSetCommand()->set($dotNotation, $value);
         return $this;
-    }
-
-    /**
-     * Transverses the keys array until it reaches the appropriate key in the data array and sets that key to the value.
-     * If the keys don't exist they are created.
-     * 
-     * @since 1.0.0
-     * @param array $data data to be traversed
-     * @param array $keys the remaining keys of focus for the data array
-     * @param mixed $value the value to be placed at the final key
-     * @throws PathNotArrayException if a value in the dot notation path is not an array
-     */
-    protected function recursiveSet(array &$data, array $keys, $value) {
-        $key = array_shift($keys);
-        if ($key && count($keys) == 0) { //Last Key
-            $data[$key] = $value;
-        } else {
-            if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
-                $this->wildCardSet($keys, $data, $value);
-            } elseif (!array_key_exists($key, $data)) {
-                $data[$key] = [];
-            } elseif (!is_array($data[$key])) {
-                throw new Exception\PathNotArrayException($key);
-            }
-            if ($key !== static::WILD_CARD_CHARACTER) {
-                $this->recursiveSet($data[$key], $keys, $value);
-            }
-        }
-    }
-
-    /**
-     * Parses each key when a wild card  key is met
-     * @since 1.3.0
-     * @param array $keys the remaining keys of focus for the data array
-     * @param array $data data to be traversed
-     * @param mixed $value the value to be placed at the final key
-     */
-    protected function wildCardSet(array $keys, &$data, $value) {
-        foreach (array_keys($data) as $key) {
-            $this->recursiveSet($data, $this->unshiftKeys($keys, $key), $value);
-        }
     }
 
     /**
@@ -233,11 +152,7 @@ class ArrayDotNotation {
      * @throws TargetNotArrayException if the value in the dot notation target is not an array
      */
     public function merge($dotNotation, array $value) {
-        $target = $this->get($dotNotation, []);
-        if (!is_array($target)) {
-            throw new Exception\TargetNotArrayException($dotNotation);
-        }
-        $this->set($dotNotation, array_merge_recursive($target, $value));
+        $this->getMergeCommand()->merge($dotNotation, $value);
         return $this;
     }
 
@@ -249,63 +164,8 @@ class ArrayDotNotation {
      * @return $this
      */
     public function remove($dotNotation) {
-        $this->recursiveRemove($this->_data, $this->getKeys($dotNotation));
+        $this->getRemoveCommand()->remove($dotNotation);
         return $this;
-    }
-
-    /**
-     * Transverses the keys array until it reaches the appropriate key in the 
-     * data array and then deletes the value from the key.
-     * 
-     * @since 1.1.0
-     * @param array $data data to be traversed
-     * @param array $keys the remaining keys of focus for the data array
-     * @throws UnexpectedValueException if a value in the dot notation path is 
-     * not an array
-     */
-    protected function recursiveRemove(array &$data, array $keys) {
-        $key = array_shift($keys);
-        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
-            $this->wildCardRemove($keys, $data);
-        } elseif (!array_key_exists($key, $data)) {
-            throw new PathNotFoundException($key);
-        } elseif ($key && count($keys) == 0) { //Last Key
-            unset($data[$key]);
-        } elseif (!is_array($data[$key])) {
-            throw new PathNotArrayException($key);
-        } else {
-            $this->recursiveRemove($data[$key], $keys);
-        }
-    }
-
-    /**
-     * Parses each key when a wild card  key is met
-     * @since 1.3.0
-     * @param array $keys the remaining keys of focus for the data array
-     * @param array $data data to be traversed
-     */
-    protected function wildCardRemove(array $keys, &$data) {
-        $keysNotFound = [];
-        foreach (array_keys($data) as $key) {
-            try {
-                $this->recursiveRemove($data, $this->unshiftKeys($keys, $key));
-            } catch (PathNotFoundException $exc) {
-                $keysNotFound[] = implode($this->getNotationType(), $this->unshiftKeys($keys, $key));
-            }
-        }
-        if(count($keysNotFound) === count($data)){
-            throw new PathNotFoundException(implode(', ', $keysNotFound));
-        }
-    }
-
-    /**
-     * consistently parses notation keys
-     * @since 1.2.0
-     * @param type $notation key path to a value in an array
-     * @return array array of keys as delimited by the notation type
-     */
-    protected function getKeys($notation) {
-        return explode($this->getNotationType(), $notation);
     }
 
     /**
@@ -337,108 +197,113 @@ class ArrayDotNotation {
      * @return boolean returns true if the dot notation path exists in the data
      */
     public function has($dotNotation) {
-        $keys = $this->getKeys($dotNotation);
-        $data = $this->_data;
-        return $this->recursiveHas($keys, $data);
+        return $this->getHasCommand()->has($dotNotation);
     }
 
     /**
-     * Recursively checks for the dot notation path in the data array
+     * @return GetCommand
+     */
+    public function getGetCommand() {
+        return $this->_getCommand;
+    }
+
+    /**
+     * 
+     * @param type $getCommand
+     * @return $this
+     */
+    public function setGetCommand(GetCommand $getCommand) {
+        $this->_getCommand = $getCommand;
+        return $this;
+    }
+
+    /**
      * 
      * @since 1.3.0
-     * @param array $keys array of keys that still need to be review for the dot notation path
-     * @param array $data data to be checked for the dot notation path
-     * @return boolean
+     * @return SetCommand
      */
-    protected function recursiveHas(array $keys, $data) {
-        $key = array_shift($keys);
-        if (is_array($data) && $key === static::WILD_CARD_CHARACTER) {
-            return $this->wildCardHas($keys, $data);
-        } elseif (!is_array($data) || !array_key_exists($key, $data)) {
-            return false;
-        } elseif ($key && count($keys) == 0) { //Last Key
-            return true;
-        }
-        return $this->recursiveHas($keys, $data[$key]);
+    public function getSetCommand() {
+        return $this->_setCommand;
     }
 
     /**
-     * A process to enumerate through the has function with a wild card
+     * 
      * @since 1.3.0
-     * @param array $keys 
-     * @param array $data
-     * @return boolean
-     */
-    protected function wildCardHas(array $keys, array $data) {
-        foreach (array_keys($data) as $key) {
-            if ($this->recursiveHas($this->unshiftKeys($keys, $key), $data)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns the current default value.
-     * @note should be a protected method
-     * @since 1.3.0
-     * @param type $key
-     * @return mixed value to be used instead of a real value is not found
-     * @throws PathNotFoundException when the key 
-     */
-    public function getDefaultValue($key = null) {
-        if ($key !== null && in_array($this->getGetMode(), [self::MODE_THROW_EXCEPTION, self::MODE_RETURN_FOUND])) {
-            throw new PathNotFoundException($key);
-        }
-        return $this->_defaultValue;
-    }
-
-    /**
-     * The default value that get will return. Do not set the value with this method. Set the default value in the get method.
-     * @note should be a protected method
-     * @since 1.3.0
-     * @param mixed $defaultValue value to be used instead of a real value is not found
+     * @param SetCommand $setCommand
      * @return $this
      */
-    public function setDefaultValue($defaultValue) {
-        $this->_defaultValue = $defaultValue;
+    public function setSetCommand(SetCommand $setCommand) {
+        $this->_setCommand = $setCommand;
         return $this;
     }
 
     /**
-     * Returns the behavior defined for how get will return a value.
+     * 
      * @since 1.3.0
-     * @return enum values are constants of this class MODE_RETURN_DEFAULT, MODE_RETURN_FOUND, MODE_THROW_EXCEPTION
+     * @return HasCommand
      */
-    public function getGetMode() {
-        return $this->_getMode;
+    public function getHasCommand() {
+        return $this->_hasCommand;
     }
 
     /**
-     * Defines the behavior on how get returns a value.
+     * 
      * @since 1.3.0
-     * @param enum $getMode values are constants of this class MODE_RETURN_DEFAULT, MODE_RETURN_FOUND, MODE_THROW_EXCEPTION
+     * @param HasCommand $hasCommand
      * @return $this
      */
-    public function setGetMode($getMode) {
-        $modes = [self::MODE_RETURN_DEFAULT, self::MODE_RETURN_FOUND, self::MODE_THROW_EXCEPTION];
-        if (!in_array($getMode, $modes)) {
-            throw new Exception\InvalidArgumentException('Not a supported mode. Please use on of:' . implode(', ', $modes));
-        }
-        $this->_getMode = $getMode;
+    public function setHasCommand(HasCommand $hasCommand) {
+        $this->_hasCommand = $hasCommand;
         return $this;
     }
 
     /**
-     * Calls the unshift function like a true function and not by reference
-     * @param array $keys array that will have a key appended to
-     * @param string $key key to be added to the beginning of the array
-     * @return array array of merged keys with key prepended to the beginning of the array
+     * 
+     * @since 1.3.0
+     * @param RemoveCommand $removeCommand
+     * @return $this
      */
-    private function unshiftKeys($keys, $key) {
-        $tempKeys = $keys;
-        array_unshift($tempKeys, $key);
-        return $tempKeys;
+    public function setRemoveCommand(RemoveCommand $removeCommand) {
+        $this->_removeCommand = $removeCommand;
+        return $this;
+    }
+
+    /**
+     * 
+     * @since 1.3.0
+     * @return RemoveCommand
+     */
+    public function getRemoveCommand() {
+        return $this->_removeCommand;
+    }
+
+    /**
+     * 
+     * @since 1.3.0
+     * @param MergeCommand $mergeCommand
+     * @return $this
+     */
+    public function setMergeCommand(MergeCommand $mergeCommand) {
+        $this->_mergeCommand = $mergeCommand;
+        return $this;
+    }
+
+    /**
+     * 
+     * @since 1.3.0
+     * @return MergeCommand
+     */
+    public function getMergeCommand() {
+        return $this->_mergeCommand;
+    }
+
+    public function getWildCardCharacter() {
+        return $this->_wildCardCharacter;
+    }
+
+    public function setWildCardCharacter($wildCardCharacter = "*") {
+        $this->_wildCardCharacter = $wildCardCharacter;
+        return $this;
     }
 
 }

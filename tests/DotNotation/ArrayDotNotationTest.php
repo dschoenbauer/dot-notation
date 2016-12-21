@@ -5,6 +5,7 @@ namespace DSchoenbauer\DotNotation;
 use DSchoenbauer\DotNotation\Exception\PathNotArrayException;
 use DSchoenbauer\DotNotation\Exception\PathNotFoundException;
 use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
+use DSchoenbauer\DotNotation\Framework\Command\GetCommand;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -71,7 +72,7 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetWildCardOnlyFound() {
-        $this->assertEquals(['someValueB'], $this->_object->setGetMode(ArrayDotNotation::MODE_RETURN_FOUND)->get('*.levelB'));
+        $this->assertEquals(['someValueB'], $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_RETURN_FOUND)->getArrayDotNotation()->get('*.levelB'));
     }
 
     public function testGetWildTable() {
@@ -92,7 +93,7 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
 
     public function testGetWildCardNotFoundException() {
         $this->expectException(PathNotFoundException::class);
-        $this->_object->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->get('*.levelC', 'noValue');
+        $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_THROW_EXCEPTION)->get('*.levelC', 'noValue');
     }
 
     public function testGetNoFindDefaultValue() {
@@ -105,7 +106,7 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
 
     public function testGetException() {
         $this->expectException(PathNotFoundException::class);
-        $this->_object->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->get('levelA.levelC', 'noValue');
+        $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_THROW_EXCEPTION)->get('levelA.levelC', 'noValue');
     }
 
     public function testSetInitialLevelNewValue() {
@@ -339,28 +340,33 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetMode() {
-        $this->assertEquals(ArrayDotNotation::MODE_RETURN_DEFAULT, $this->_object->setGetMode(ArrayDotNotation::MODE_RETURN_DEFAULT)->getGetMode());
-        $this->assertEquals(ArrayDotNotation::MODE_RETURN_FOUND, $this->_object->setGetMode(ArrayDotNotation::MODE_RETURN_FOUND)->getGetMode());
-        $this->assertEquals(ArrayDotNotation::MODE_THROW_EXCEPTION, $this->_object->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->getGetMode());
+        $this->assertEquals(GetCommand::MODE_RETURN_DEFAULT, $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_RETURN_DEFAULT)->getGetMode());
+        $this->assertEquals(GetCommand::MODE_RETURN_FOUND, $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_RETURN_FOUND)->getGetMode());
+        $this->assertEquals(GetCommand::MODE_THROW_EXCEPTION, $this->_object->getGetCommand()->setGetMode(GetCommand::MODE_THROW_EXCEPTION)->getGetMode());
 
         $this->expectException(Exception\InvalidArgumentException::class);
-        $this->_object->setGetMode('not a mode');
+        $this->_object->getGetCommand()->setGetMode('not a mode');
     }
 
     public function testDefaultValue() {
-        $this->assertEquals('test', $this->_object->setDefaultValue('test')->getDefaultValue(), 'Straight pass through');
-        $this->assertEquals('test', $this->_object->setDefaultValue('test')->getDefaultValue('key'), 'Key Ignored due to mode');
+        $this->assertEquals('test', $this->_object->getGetCommand()->setDefaultValue('test')->getDefaultValue(), 'Straight pass through');
+        $this->assertEquals('test', $this->_object->getGetCommand()->setDefaultValue('test')->getDefaultValue('key'), 'Key Ignored due to mode');
 
-        $this->assertEquals('test', $this->_object->setDefaultValue('test')->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->getDefaultValue(), 'Mode ignored without key');
-        $this->assertEquals('test', $this->_object->setDefaultValue('test')->setGetMode(ArrayDotNotation::MODE_RETURN_FOUND)->getDefaultValue(), 'Mode ignored without key');
+        $this->assertEquals('test', $this->_object->getGetCommand()->setDefaultValue('test')->setGetMode(GetCommand::MODE_THROW_EXCEPTION)->getDefaultValue(), 'Mode ignored without key');
+        $this->assertEquals('test', $this->_object->getGetCommand()->setDefaultValue('test')->setGetMode(GetCommand::MODE_RETURN_FOUND)->getDefaultValue(), 'Mode ignored without key');
 
         $this->expectException(PathNotFoundException::class);
-        $this->_object->setDefaultValue('test')->setGetMode(ArrayDotNotation::MODE_THROW_EXCEPTION)->getDefaultValue('key');
+        $this->_object->getGetCommand()->setDefaultValue('test')->setGetMode(GetCommand::MODE_THROW_EXCEPTION)->getDefaultValue('key');
+    }
+
+    public function testWildCardCharacter() {
+        $this->assertEquals('t', $this->_object->setWildCardCharacter("t")->getWildCardCharacter(), 'Straight pass through');
+        $this->assertTrue($this->_object->setWildCardCharacter("t")->has('t'));
     }
 
     public function testDefaultValueOnlyFound() {
         $this->expectException(PathNotFoundException::class);
-        $this->_object->setDefaultValue('test')->setGetMode(ArrayDotNotation::MODE_RETURN_FOUND)->getDefaultValue('key');
+        $this->_object->getGetCommand()->setDefaultValue('test')->setGetMode(GetCommand::MODE_RETURN_FOUND)->getDefaultValue('key');
     }
 
 }
