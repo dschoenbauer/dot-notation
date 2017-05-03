@@ -2,6 +2,15 @@
 
 [![Build Status](https://travis-ci.org/dschoenbauer/dot-notation.svg?branch=develop)](https://travis-ci.org/dschoenbauer/dot-notation)
 [![Coverage Status](https://coveralls.io/repos/github/dschoenbauer/dot-notation/badge.svg?branch=develop)](https://coveralls.io/github/dschoenbauer/dot-notation?branch=develop)
+[![License](https://img.shields.io/packagist/l/dschoenbauer/dot-notation.svg)](https://github.com/dschoenbauer/dot-notation)
+[![Downloads](https://img.shields.io/packagist/dt/dschoenbauer/dot-notation.svg)](https://packagist.org/packages/dschoenbauer/dot-notation)
+[![Version](https://img.shields.io/packagist/v/dschoenbauer/dot-notation.svg)](https://github.com/dschoenbauer/dot-notation/releases)
+
+
+[![License](https://img.shields.io/packagist/l/dschoenbauer/dot-notation.svg)](https://github.com/dschoenbauer/dot-notation)
+[![Downloads](https://img.shields.io/packagist/dt/dschoenbauer/dot-notation.svg)](https://packagist.org/packages/dschoenbauer/dot-notation)
+[![Version](https://img.shields.io/packagist/v/dschoenbauer/dot-notation.svg)](https://github.com/dschoenbauer/dot-notation/releases)
+
 
 ## Purpose
 Simplifies access to large array structures
@@ -100,7 +109,7 @@ $user = $config->setNotationType(',')->get('mongo,default,user');
 ### WITH
 ````
 //Functional fluent fun
-$user = ArrayDotNotation::with($mongoConnection)->get('mongo,default,user');
+$user = ArrayDotNotation::with($mongoConnection)->get('mongo.default.user');
 /*
     $user = 'username';
 */ 

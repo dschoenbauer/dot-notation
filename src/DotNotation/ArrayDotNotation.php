@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -23,7 +22,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 namespace DSchoenbauer\DotNotation;
 
 use DSchoenbauer\DotNotation\Exception\PathNotArrayException;
@@ -37,7 +35,8 @@ use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
  * @author David Schoenbauer
  * @version 1.2.0
  */
-class ArrayDotNotation {
+class ArrayDotNotation
+{
 
     /**
      * Property that houses the data that the dot notation should access
@@ -54,7 +53,8 @@ class ArrayDotNotation {
      * @author David Schoenbauer
      * @return \static
      */
-    public static function with(array $data = []) {
+    public static function with(array $data = [])
+    {
         return new static($data);
     }
 
@@ -65,7 +65,8 @@ class ArrayDotNotation {
      * @since 1.0.0
      * @param array $data optional Array of data that will be accessed via dot notation.
      */
-    public function __construct(array $data = []) {
+    public function __construct(array $data = [])
+    {
         $this->setData($data);
     }
 
@@ -77,7 +78,8 @@ class ArrayDotNotation {
      * @since 1.0.0
      * @return array Array of data that will be accessed via dot notation.
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->_data;
     }
 
@@ -88,7 +90,8 @@ class ArrayDotNotation {
      * @param array $data Array of data that will be accessed via dot notation.
      * @return $this
      */
-    public function setData(array $data) {
+    public function setData(array $data)
+    {
         $this->_data = $data;
         return $this;
     }
@@ -103,7 +106,8 @@ class ArrayDotNotation {
      * @param mixed $defaultValue value to return if the dot notation does not find a valid key
      * @return mixed value found via dot notation in the array of data
      */
-    public function get($dotNotation, $defaultValue = null) {
+    public function get($dotNotation, $defaultValue = null)
+    {
         return $this->recursiveGet($this->getData(), $this->getKeys($dotNotation), $defaultValue);
     }
 
@@ -115,9 +119,10 @@ class ArrayDotNotation {
      * @param mixed $defaultValue value to return when a key is not found
      * @return mixed value that the keys find in the data array
      */
-    protected function recursiveGet($data, $keys, $defaultValue) {
+    protected function recursiveGet($data, $keys, $defaultValue)
+    {
         $key = array_shift($keys);
-        if (is_array($data) && $key && count($keys) == 0) { //Last Key
+        if (is_array($data) && $key !== null && count($keys) == 0) { //Last Key
             return array_key_exists($key, $data) ? $data[$key] : $defaultValue;
         } elseif (is_array($data) && array_key_exists($key, $data)) {
             return $this->recursiveGet($data[$key], $keys, $defaultValue);
@@ -140,7 +145,8 @@ class ArrayDotNotation {
      * @return $this
      * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
-    public function set($dotNotation, $value) {
+    public function set($dotNotation, $value)
+    {
         $this->recursiveSet($this->_data, $this->getKeys($dotNotation), $value);
         return $this;
     }
@@ -155,9 +161,10 @@ class ArrayDotNotation {
      * @param mixed $value the value to be placed at the final key
      * @throws PathNotArrayException if a value in the dot notation path is not an array
      */
-    protected function recursiveSet(array &$data, array $keys, $value) {
+    protected function recursiveSet(array &$data, array $keys, $value)
+    {
         $key = array_shift($keys);
-        if ($key && count($keys) == 0) { //Last Key
+        if ($key !== null && count($keys) == 0) { //Last Key
             $data[$key] = $value;
         } else {
             if (!array_key_exists($key, $data)) {
@@ -179,7 +186,8 @@ class ArrayDotNotation {
      * @throws UnexpectedValueException if a value in the dot notation path is not an array
      * @throws TargetNotArrayException if the value in the dot notation target is not an array
      */
-    public function merge($dotNotation, array $value) {
+    public function merge($dotNotation, array $value)
+    {
         $target = $this->get($dotNotation, []);
         if (!is_array($target)) {
             throw new Exception\TargetNotArrayException($dotNotation);
@@ -195,7 +203,8 @@ class ArrayDotNotation {
      * @param string $dotNotation dot notation representation of keys of where to remove a value
      * @return $this
      */
-    public function remove($dotNotation) {
+    public function remove($dotNotation)
+    {
         $this->recursiveRemove($this->_data, $this->getKeys($dotNotation));
         return $this;
     }
@@ -210,11 +219,12 @@ class ArrayDotNotation {
      * @throws UnexpectedValueException if a value in the dot notation path is 
      * not an array
      */
-    protected function recursiveRemove(array &$data, array $keys) {
+    protected function recursiveRemove(array &$data, array $keys)
+    {
         $key = array_shift($keys);
         if (!array_key_exists($key, $data)) {
             throw new PathNotFoundException($key);
-        } elseif ($key && count($keys) == 0) { //Last Key
+        } elseif ($key !== 0 && count($keys) == 0) { //Last Key
             unset($data[$key]);
         } elseif (!is_array($data[$key])) {
             throw new PathNotArrayException($key);
@@ -229,7 +239,8 @@ class ArrayDotNotation {
      * @param type $notation key path to a value in an array
      * @return array array of keys as delimited by the notation type
      */
-    protected function getKeys($notation) {
+    protected function getKeys($notation)
+    {
         return explode($this->getNotationType(), $notation);
     }
 
@@ -239,7 +250,8 @@ class ArrayDotNotation {
      * @since 1.2.0
      * @return string current notation character delimiting the notation path
      */
-    public function getNotationType() {
+    public function getNotationType()
+    {
         return $this->_notationType;
     }
 
@@ -249,7 +261,8 @@ class ArrayDotNotation {
      * @param string $notationType
      * @return $this
      */
-    public function setNotationType($notationType = ".") {
+    public function setNotationType($notationType = ".")
+    {
         $this->_notationType = $notationType;
         return $this;
     }
@@ -260,7 +273,8 @@ class ArrayDotNotation {
      * @param string $dotNotation dot notation representation of keys of where to remove a value
      * @return boolean returns true if the dot notation path exists in the data
      */
-    public function has($dotNotation) {
+    public function has($dotNotation)
+    {
         $keys = $this->getKeys($dotNotation);
         $dataRef = &$this->_data;
         foreach ($keys as $key) {
@@ -272,5 +286,4 @@ class ArrayDotNotation {
         }
         return true;
     }
-
 }

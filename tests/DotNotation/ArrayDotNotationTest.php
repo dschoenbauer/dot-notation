@@ -1,5 +1,4 @@
 <?php
-
 namespace DSchoenbauer\DotNotation;
 
 use DSchoenbauer\DotNotation\Exception\UnexpectedValueException;
@@ -10,11 +9,13 @@ use PHPUnit_Framework_TestCase;
  *
  * @author David
  */
-class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
+class ArrayDotNotationTest extends PHPUnit_Framework_TestCase
+{
 
     private $_object;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $data = [
             'levelA' => [
                 'levelB' => 'someValueB'
@@ -27,48 +28,79 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->_object = new ArrayDotNotation($data);
     }
 
-    public function testData() {
+    public function testData()
+    {
         $data = ['test' => 'value'];
         $this->assertEquals($data, $this->_object->setData($data)->getData());
     }
 
-    public function testDataConstructor() {
+    public function testDataConstructor()
+    {
         $data = ['test' => 'value'];
         $object = new ArrayDotNotation($data);
         $this->assertEquals($data, $object->getData());
     }
-    
-    public function testWith(){
+
+    public function testWith()
+    {
         $this->assertInstanceOf(ArrayDotNotation::class, ArrayDotNotation::with());
     }
 
-    public function testWithData(){
-        $data = ['test'=>'value'];
+    public function testWithData()
+    {
+        $data = ['test' => 'value'];
         $this->assertEquals($data, ArrayDotNotation::with($data)->getData());
     }
-    
-    public function testWithNoData(){
+
+    public function testWithNoData()
+    {
         $this->assertEquals([], ArrayDotNotation::with()->getData());
     }
 
-    public function testGet() {
+    public function testGet()
+    {
         $this->assertEquals('someValueB', $this->_object->get('levelA.levelB'));
     }
 
-    public function testGetNoFindDefaultValue() {
+    public function testGetZero()
+    {
+        $data = ['zero', 'one', 'two'];
+        $this->_object->setData($data);
+        foreach ($data as $key => $value) {
+            $this->assertEquals($value, $this->_object->get($key), $key);
+        }
+    }
+
+    public function testGetNoFindDefaultValue()
+    {
         $this->assertEquals('noValue', $this->_object->get('levelA.levelB.levelC', 'noValue'));
     }
 
-    public function testGetSameLevelDefaultValue() {
+    public function testGetSameLevelDefaultValue()
+    {
         $this->assertEquals('noValue', $this->_object->get('levelA.levelC', 'noValue'));
     }
+    
+    public function testSetZero(){
+        $data = ['notZero', 'one', 'two'];
+        $results = ['zero', 'one', 'two'];
+        $this->assertEquals($results, ArrayDotNotation::with($data)->set(0, 'zero')->getData());
+    }
+    
+    public function testSetZeroString(){
+        $data = ['notZero', 'one', 'two'];
+        $results = ['zero', 'one', 'two'];
+        $this->assertEquals($results, ArrayDotNotation::with($data)->set('0', 'zero')->getData());
+    }
 
-    public function testSetInitialLevelNewValue() {
+    public function testSetInitialLevelNewValue()
+    {
         $this->assertEquals('noValue', $this->_object->get('levelD', 'noValue'));
         $this->assertEquals('newValue', $this->_object->set('levelD', 'newValue')->get('levelD'));
     }
 
-    public function testSetDeepLevelNewValue() {
+    public function testSetDeepLevelNewValue()
+    {
         $this->assertEquals('noValue', $this->_object->get('LevelA.LevelB.LevelC.levelD', 'noValue'));
         $this->assertEquals('newValue', $this->_object->set('LevelA.LevelB.LevelC.levelD', 'newValue')->get('LevelA.LevelB.LevelC.levelD'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
@@ -78,31 +110,36 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage Array dot notation path key 'c' is not an array
      */
-    public function testSetNotExistArrayButString() {
+    public function testSetNotExistArrayButString()
+    {
         $data = ['a' => ['b' => ['c' => 'cValue']]];
         $newData = ['e' => 'dValue'];
         $this->_object->setData($data)->set('a.b.c.d', $newData)->getData();
     }
 
-    public function testSetInitialLevelExistingValue() {
+    public function testSetInitialLevelExistingValue()
+    {
         $this->assertEquals('levelB', $this->_object->get('levelB'));
         $this->assertEquals('newValue', $this->_object->set('levelB', 'newValue')->get('levelB'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
 
-    public function testSetDeepLevelExistingValue() {
+    public function testSetDeepLevelExistingValue()
+    {
         $this->assertEquals('someValueB', $this->_object->get('levelA.levelB'));
         $this->assertEquals('newValue', $this->_object->set('levelA.levelB', 'newValue')->get('levelA.levelB'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
 
-    public function testSetDataTypeConversion() {
+    public function testSetDataTypeConversion()
+    {
         $this->assertEquals(['levelB' => 'someValueB'], $this->_object->get('levelA'));
         $this->assertEquals('newValue', $this->_object->set('levelA', 'newValue')->get('levelA'));
         $this->assertEquals('someValue2', $this->_object->get('level1.level2'), "existing value compromised");
     }
 
-    public function testMergeSimpleArray() {
+    public function testMergeSimpleArray()
+    {
         $data = ['a' => ['b' => ['c' => 'cValue']]];
         $merge = ['d' => 'dValue'];
         $this->assertEquals('dValue', $this->_object->setData($data)->merge('a.b', $merge)->get('a.b.d'));
@@ -113,7 +150,8 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage Array dot notation target key 'a.b.c' value is not an array.
      */
-    public function testMergeNotAnArray() {
+    public function testMergeNotAnArray()
+    {
         $data = ['a' => ['b' => ['c' => 'cValue']]];
         $merge = ['d' => 'dValue'];
         $this->_object->setData($data)->merge('a.b.c', $merge);
@@ -123,20 +161,23 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage Array dot notation path key 'c' is not an array
      */
-    public function testMergeNotPresentKeyString() {
+    public function testMergeNotPresentKeyString()
+    {
         $data = ['a' => ['b' => ['c' => 'cValue']]];
         $merge = ['e' => 'dValue'];
         $this->_object->setData($data)->merge('a.b.c.d', $merge)->getData();
     }
 
-    public function testMergeNotPresentKey() {
+    public function testMergeNotPresentKey()
+    {
         $data = ['a' => ['b' => ['c' => []]]];
         $merge = ['e' => 'dValue'];
         $result = ['a' => ['b' => ['c' => ['d' => ['e' => 'dValue']]]]];
         $this->assertEquals($result, $this->_object->setData($data)->merge('a.b.c.d', $merge)->getData());
     }
 
-    public function testRemove() {
+    public function testRemove()
+    {
         $data = [
             'levelA' => [],
             'levelB' => 'levelB',
@@ -147,39 +188,54 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($data, $this->_object->remove('levelA.levelB')->getData());
     }
 
+    public function testRemoveZero()
+    {
+        $data = ['zero', 'one', 'two'];
+        $result = [1 => 'one', 2 => 'two'];
+        $this->assertEquals($result, ArrayDotNotation::with($data)->remove(0)->getData());
+    }
+
     /**
      * @expectedException \DSchoenbauer\DotNotation\Exception\PathNotFoundException
      */
-    public function testRemovePathNotFound() {
+    public function testRemovePathNotFound()
+    {
         $this->_object->remove('levelA.levelC');
     }
-    
+
     /**
      * @expectedException \DSchoenbauer\DotNotation\Exception\PathNotFoundException
      */
-    public function testRemovePathNotFoundShort() {
+    public function testRemovePathNotFoundShort()
+    {
         $this->_object->remove('level0');
     }
+
     /**
      * @expectedException \DSchoenbauer\DotNotation\Exception\PathNotArrayException
      */
-    public function testRemovePathNotArray() {
+    public function testRemovePathNotArray()
+    {
         $this->_object->remove('levelA.levelB.levelD');
     }
 
-    public function testChangeNotationType(){
+    public function testChangeNotationType()
+    {
         $this->assertEquals('someValueB', $this->_object->setNotationType('-')->get('levelA-levelB'));
     }
 
-    public function testChangeNotationTypeNoFindDefaultValue() {
+    public function testChangeNotationTypeNoFindDefaultValue()
+    {
         $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelB-levelC', 'noValue'));
     }
 
-    public function testChangeNotationTypeSameLevelDefaultValue() {
+    public function testChangeNotationTypeSameLevelDefaultValue()
+    {
         $this->assertEquals('noValue', $this->_object->setNotationType('-')->get('levelA-levelC', 'noValue'));
     }
 
-    public function testHas(){
+    public function testHas()
+    {
         $this->assertTrue($this->_object->has('levelA'));
         $this->assertTrue($this->_object->has('levelA.levelB'));
         $this->assertTrue($this->_object->has('levelB'));
@@ -188,5 +244,4 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->_object->has('level1.level2.level3'));
         $this->assertFalse($this->_object->has('level2'));
     }
-
 }
