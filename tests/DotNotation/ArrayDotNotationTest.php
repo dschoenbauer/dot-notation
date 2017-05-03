@@ -54,6 +54,14 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
     public function testGet() {
         $this->assertEquals('someValueB', $this->_object->get('levelA.levelB'));
     }
+    
+    public function testGetZero(){
+        $data = ['zero','one','two'];
+        $this->_object->setData($data);
+        foreach ($data as $key => $value) {
+            $this->assertEquals($value, $this->_object->get($key), $key);
+        }
+    }
 
     public function testGetNoFindDefaultValue() {
         $this->assertEquals('noValue', $this->_object->get('levelA.levelB.levelC', 'noValue'));
@@ -188,5 +196,5 @@ class ArrayDotNotationTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->_object->has('level1.level2.level3'));
         $this->assertFalse($this->_object->has('level2'));
     }
-
+    
 }
