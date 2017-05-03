@@ -163,7 +163,7 @@ class ArrayDotNotation
     protected function recursiveSet(array &$data, array $keys, $value)
     {
         $key = array_shift($keys);
-        if ($key && count($keys) == 0) { //Last Key
+        if ($key !== null && count($keys) == 0) { //Last Key
             $data[$key] = $value;
         } else {
             if (!array_key_exists($key, $data)) {
@@ -223,7 +223,7 @@ class ArrayDotNotation
         $key = array_shift($keys);
         if (!array_key_exists($key, $data)) {
             throw new PathNotFoundException($key);
-        } elseif ($key && count($keys) == 0) { //Last Key
+        } elseif ($key !== 0 && count($keys) == 0) { //Last Key
             unset($data[$key]);
         } elseif (!is_array($data[$key])) {
             throw new PathNotArrayException($key);
